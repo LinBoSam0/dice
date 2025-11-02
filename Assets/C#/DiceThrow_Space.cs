@@ -71,16 +71,35 @@ public class DiceThrow_Space : MonoBehaviour
         Debug.Log("Dice thrown!");
     }
 
+
     void ShowResult()
     {
-        int result = Random.Range(1, 7); // 最終結果
+        int result = Random.Range(1, 7);
         resultShown = true;
         isRolling = false;
 
         if (resultText != null)
-            resultText.text = "🎲骰子點數 " + result;
+            resultText.text = "🎲 " + result;
 
         Debug.Log("骰子點數：" + result);
+
+        // 比對目標
+        TargetNumberDisplay target = FindObjectOfType<TargetNumberDisplay>();
+        if (target != null)
+        {
+            if (result == target.targetNumber)
+            {
+                if (resultText != null)
+                    resultText.text += "\n✅ 恭喜！投中目標";
+                Debug.Log("✅ 恭喜！投中目標");
+            }
+            else
+            {
+                if (resultText != null)
+                    resultText.text += "\n❌ 沒有投中，目標是 " + target.targetNumber;
+                Debug.Log("❌ 沒有投中，目標是 " + target.targetNumber);
+            }
+        }
     }
 
     void ResetDice()
@@ -93,4 +112,5 @@ public class DiceThrow_Space : MonoBehaviour
         if (resultText != null) resultText.text = "";
         Debug.Log("Dice reset.");
     }
+
 }
