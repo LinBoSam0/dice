@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(SpriteRenderer))]
 public class DiceThrow_Space : MonoBehaviour
 {
     [Header("Throw Settings")]
@@ -17,7 +17,11 @@ public class DiceThrow_Space : MonoBehaviour
     [Header("UI (Optional)")]
     public Text resultText;
 
+    [Header("Dice Sprites (1~6)")]
+    public Sprite[] diceFaces; // 在 Inspector 拖入六張骰子圖片
+
     private Rigidbody2D rb;
+    private SpriteRenderer sr;
     private bool isRolling = false;
     private bool resultShown = false;
     private int currentRandom = 1;
@@ -25,6 +29,7 @@ public class DiceThrow_Space : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
         if (resultText != null) resultText.text = "";
     }
 
@@ -40,8 +45,14 @@ public class DiceThrow_Space : MonoBehaviour
         if (isRolling && !resultShown)
         {
             currentRandom = Random.Range(1, 7);
+
+            // UI 顯示閃爍數字
             if (resultText != null)
                 resultText.text = currentRandom.ToString();
+
+            // Sprite 也跟著閃爍
+            if (diceFaces != null && diceFaces.Length >= 6)
+                sr.sprite = diceFaces[currentRandom - 1];
 
             // 檢查是否停止
             if (rb.linearVelocity.magnitude < stopVelocityThreshold &&
@@ -71,12 +82,15 @@ public class DiceThrow_Space : MonoBehaviour
         Debug.Log("Dice thrown!");
     }
 
-
     void ShowResult()
     {
         int result = Random.Range(1, 7);
         resultShown = true;
         isRolling = false;
+
+        // 換 Sprite
+        if (diceFaces != null && diceFaces.Length >= 6)
+            sr.sprite = diceFaces[result - 1];
 
         if (resultText != null)
             resultText.text = "🎲 " + result;
@@ -112,5 +126,4 @@ public class DiceThrow_Space : MonoBehaviour
         if (resultText != null) resultText.text = "";
         Debug.Log("Dice reset.");
     }
-
 }
